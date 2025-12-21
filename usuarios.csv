@@ -1,0 +1,4 @@
+username,email,first_name,last_name,role,department,alma_id,phone,password
+jperez,jperez@uah.cl,Juan,Pérez,student,Ingeniería,,+56912345678,cambiar123
+mgarcia,mgarcia@uah.cl,María,García,teacher,Derecho,ALMA123,,cambiar123
+admin1,admin@uah.cl,Admin,Sistema,admin,TI,ALMA124,,admin123

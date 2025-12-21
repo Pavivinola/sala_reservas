@@ -1,0 +1,235 @@
+{% extends 'reservas/base.html' %}
+
+{% block title %}Confirmar Reserva{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-card {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .reservation-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .reservation-summary h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-label {
+        opacity: 0.9;
+    }
+
+    .summary-value {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .materials-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .materials-section h4 {
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .material-option {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .material-option:hover {
+        border-color: #667eea;
+        transform: translateX(5px);
+    }
+
+    .material-option input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 1rem;
+        cursor: pointer;
+    }
+
+    .material-info {
+        flex: 1;
+    }
+
+    .material-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .material-description {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .notes-section {
+        margin-bottom: 2rem;
+    }
+
+    .notes-section textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        resize: vertical;
+        min-height: 100px;
+        transition: border-color 0.3s;
+    }
+
+    .notes-section textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-buttons .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-card">
+    <div class="card">
+        <div class="card-header">
+            <h2>📝 Confirmar Reserva</h2>
+        </div>
+
+        <!-- Resumen de Reserva -->
+        <div class="reservation-summary">
+            <h3>📋 Resumen de tu Reserva</h3>
+            
+            <div class="summary-item">
+                <span class="summary-label">🏢 Sala:</span>
+                <span class="summary-value">{{ sala.name }}</span>
+            </div>
+
+            <div class="summary-item">
+                <span class="summary-label">👥 Capacidad:</span>
+                <span class="summary-value">{{ sala.capacity }} personas</span>
+            </div>
+
+            <div class="summary-item">
+                <span class="summary-label">📅 Fecha:</span>
+                <span class="summary-value">{{ fecha|date:"l, d/m/Y" }}</span>
+            </div>
+
+            <div class="summary-item">
+                <span class="summary-label">⏰ Horario:</span>
+                <span class="summary-value">{{ bloque.start_time|time:"H:i" }} - {{ bloque.end_time|time:"H:i" }}</span>
+            </div>
+
+            <div class="summary-item">
+                <span class="summary-label">⌛ Duración:</span>
+                <span class="summary-value">{{ bloque.duration_hours }} hora(s)</span>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Materiales Disponibles -->
+            {% if materiales_disponibles %}
+            <div class="materials-section">
+                <h4>📦 Materiales Adicionales (Opcional)</h4>
+                <p style="color: #666; margin-bottom: 1rem;">Selecciona los materiales que necesitas para tu reserva:</p>
+                
+                {% for material in materiales_disponibles %}
+                <label class="material-option">
+                    <input type="checkbox" name="materiales" value="{{ material.id }}">
+                    <div class="material-info">
+                        <div class="material-name">{{ material.name }}</div>
+                        {% if material.description %}
+                        <div class="material-description">{{ material.description }}</div>
+                        {% endif %}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="padding: 1rem; background-color: #fff3cd; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #ffc107;">
+                <p style="color: #856404;">ℹ️ Esta sala no tiene materiales adicionales disponibles</p>
+            </div>
+            {% endif %}
+
+            <!-- Notas Adicionales -->
+            <div class="notes-section">
+                <label for="notas" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">
+                    📝 Notas Adicionales (Opcional)
+                </label>
+                <textarea 
+                    name="notas" 
+                    id="notas" 
+                    placeholder="Escribe aquí cualquier información adicional sobre tu reserva..."
+                ></textarea>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-success" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    ✓ Confirmar Reserva
+                </button>
+                <a href="{% url 'reservas:disponibilidad' %}?fecha={{ fecha|date:'Y-m-d' }}" class="btn btn-cancel" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    ✗ Cancelar
+                </a>
+            </div>
+        </form>
+
+        <!-- Recordatorio -->
+        <div style="margin-top: 2rem; padding: 1.5rem; background-color: #e7f3ff; border-radius: 8px; border-left: 4px solid #2196F3;">
+            <h4 style="color: #1976D2; margin-bottom: 0.5rem;">💡 Importante</h4>
+            <ul style="color: #1976D2; margin-left: 1.5rem;">
+                <li>Llega puntual a tu reserva</li>
+                <li>Puedes cancelar tu reserva desde "Mis Reservas"</li>
+                <li>Cuida los materiales solicitados</li>
+                <li>Deja la sala limpia y ordenada al finalizar</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

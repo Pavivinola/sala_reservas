@@ -1,0 +1,78 @@
+{% extends 'reservas/base.html' %}
+
+{% block title %}Inicio - Sistema de Reservas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="text-align: center; padding: 2rem 0;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: #667eea;">
+            Bienvenido al Sistema de Reservas de Salas
+        </h1>
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
+            Reserva salas de estudio de manera fácil y rápida
+        </p>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin: 3rem 0;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; min-width: 200px;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏢</div>
+                <div style="font-size: 2rem; font-weight: bold;">{{ total_salas }}</div>
+                <div style="opacity: 0.9;">Salas Disponibles</div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: 12px; min-width: 200px;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">⏰</div>
+                <div style="font-size: 2rem; font-weight: bold;">{{ total_bloques }}</div>
+                <div style="opacity: 0.9;">Bloques Horarios</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <a href="{% url 'reservas:disponibilidad' %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">
+                🔍 Ver Disponibilidad
+            </a>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'reservas:mis_reservas' %}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem;">
+                📋 Ver Mis Reservas
+            </a>
+        </div>
+        {% else %}
+        <div style="margin-top: 2rem; padding: 1.5rem; background-color: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+            <p style="color: #856404; font-weight: 500;">
+                ℹ️ Para realizar reservas debes iniciar sesión
+            </p>
+            <a href="{% url 'admin:login' %}?next={% url 'reservas:disponibilidad' %}" class="btn btn-primary" style="margin-top: 1rem;">
+                Iniciar Sesión
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>📋 ¿Cómo funciona?</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+        <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">1️⃣</div>
+            <h3 style="color: #667eea; margin-bottom: 0.5rem;">Ver Disponibilidad</h3>
+            <p style="color: #666;">Consulta las salas y horarios disponibles en tiempo real</p>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">2️⃣</div>
+            <h3 style="color: #667eea; margin-bottom: 0.5rem;">Selecciona tu Sala</h3>
+            <p style="color: #666;">Elige la sala y el horario que mejor se ajuste a tus necesidades</p>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">3️⃣</div>
+            <h3 style="color: #667eea; margin-bottom: 0.5rem;">Confirma tu Reserva</h3>
+            <p style="color: #666;">Opcionalmente solicita materiales adicionales disponibles</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
