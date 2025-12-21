@@ -139,10 +139,3 @@ Ejemplo: Lunes 9:00-11:00, Martes 10:00-12:00, etc.
 4. Configurar `STATIC_ROOT` y ejecutar `collectstatic`
 5. Configurar servidor web (nginx/Apache)
 
-## 📄 Licencia
-
-Proyecto interno - Universidad Católica
-
-## 👨‍💻 Autor
-
-Jorge - Desarrollador
