@@ -216,32 +216,44 @@ class ReservationRules(models.Model):
 # MODELO: Role (Rol de Usuario)
 # ========================================
 class Role(models.Model):
-    ROLE_TYPES = [
-        ('student', 'Estudiante'),
-        ('teacher', 'Profesor'),
-        ('staff', 'Personal'),
-        ('admin', 'Administrador'),
-    ]
-    
     name = models.CharField(
         max_length=50,
-        choices=ROLE_TYPES,
         unique=True,
-        verbose_name="Tipo de rol"
+        verbose_name="Nombre del rol",
+        help_text="Ej: Estudiante, Profesor, Investigador, etc."
     )
-    description = models.TextField(blank=True, verbose_name="Descripción")
+    display_name = models.CharField(
+        max_length=100,
+        verbose_name="Nombre para mostrar",
+        help_text="Nombre amigable que se mostrará en la interfaz"
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name="Descripción",
+        help_text="Describe los permisos y alcance de este rol"
+    )
     
     # Permisos específicos
-    can_reserve = models.BooleanField(default=True, verbose_name="Puede reservar")
+    can_reserve = models.BooleanField(
+        default=True,
+        verbose_name="Puede reservar",
+        help_text="Si puede hacer reservas de salas"
+    )
     can_reserve_internal_rooms = models.BooleanField(
         default=False,
-        verbose_name="Puede reservar salas internas"
+        verbose_name="Puede reservar salas internas",
+        help_text="Acceso a salas marcadas como 'uso interno'"
     )
     max_hours_override = models.PositiveIntegerField(
         null=True,
         blank=True,
-        verbose_name="Horas máximas (sobrescribe regla global)",
-        help_text="Dejar vacío para usar la regla global"
+        verbose_name="Horas máximas por día (opcional)",
+        help_text="Deja vacío para usar la regla global. Si defines un valor, sobrescribe la regla global para este rol."
+    )
+    priority = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Prioridad",
+        help_text="Mayor número = mayor prioridad (útil para casos de conflicto)"
     )
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -250,11 +262,11 @@ class Role(models.Model):
     class Meta:
         verbose_name = "Rol"
         verbose_name_plural = "Roles"
+        ordering = ['-priority', 'name']
 
     def __str__(self):
-        return self.get_name_display()
-
-
+        return self.display_name
+    
 # ========================================
 # MODELO: UserProfile (Perfil de Usuario)
 # ========================================

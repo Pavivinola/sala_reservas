@@ -250,16 +250,64 @@ admin.site.index_title = "Panel de Administración"
 # ========================================
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
-    list_display = ['name', 'can_reserve', 'can_reserve_internal_rooms', 'max_hours_override', 'user_count']
+    list_display = [
+        'display_name', 
+        'name',
+        'can_reserve_badge', 
+        'internal_rooms_badge',
+        'max_hours_display',
+        'priority',
+        'user_count'
+    ]
     list_filter = ['can_reserve', 'can_reserve_internal_rooms']
+    search_fields = ['name', 'display_name', 'description']
+    list_editable = ['priority']
+    
+    fieldsets = (
+        ('Información Básica', {
+            'fields': ('name', 'display_name', 'description'),
+            'description': 'Define el nombre técnico y el nombre visible del rol'
+        }),
+        ('Permisos de Reserva', {
+            'fields': ('can_reserve', 'can_reserve_internal_rooms', 'max_hours_override'),
+            'description': 'Configura qué puede hacer este rol en el sistema'
+        }),
+        ('Configuración Avanzada', {
+            'fields': ('priority',),
+            'description': 'Mayor número = mayor prioridad',
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def can_reserve_badge(self, obj):
+        """Badge para permiso de reserva"""
+        if obj.can_reserve:
+            return format_html('<span style="color: green; font-weight: bold;">✓ Sí</span>')
+        return format_html('<span style="color: red;">✗ No</span>')
+    can_reserve_badge.short_description = "Puede Reservar"
+    
+    def internal_rooms_badge(self, obj):
+        """Badge para salas internas"""
+        if obj.can_reserve_internal_rooms:
+            return format_html('<span style="color: orange; font-weight: bold;">✓ Sí</span>')
+        return format_html('<span style="color: gray;">✗ No</span>')
+    internal_rooms_badge.short_description = "Salas Internas"
+    
+    def max_hours_display(self, obj):
+        """Muestra las horas máximas"""
+        if obj.max_hours_override:
+            return f"{obj.max_hours_override}h/día"
+        return "Regla global"
+    max_hours_display.short_description = "Máx. Horas"
     
     def user_count(self, obj):
         """Cantidad de usuarios con este rol"""
         count = obj.users.count()
-        return f"{count} usuario(s)"
+        return format_html(
+            '<span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px;">{}</span>',
+            count
+        )
     user_count.short_description = "Usuarios"
-
-
 # ========================================
 # ADMIN: UserProfile
 # ========================================

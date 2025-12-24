@@ -59,9 +59,21 @@ class Command(BaseCommand):
                             user.set_password(row.get('password', 'cambiar123'))
                             user.save()
                             usuarios_creados += 1
-
-                        # Obtener rol
-                        role = Role.objects.get(name=row['role'])
+                                                
+                        # Obtener rol (buscar por name o display_name)
+                        try:
+                            role = Role.objects.get(name=row['role'])
+                        except Role.DoesNotExist:
+                            try:
+                                role = Role.objects.get(display_name=row['role'])
+                            except Role.DoesNotExist:
+                                self.stdout.write(
+                                    self.style.ERROR(
+                                        f'✗ Rol "{row["role"]}" no existe para usuario {row["username"]}'
+                                    )
+                                )
+                                errores += 1
+                                continue
                         
                         # Crear o actualizar perfil
                         profile, profile_created = UserProfile.objects.get_or_create(
