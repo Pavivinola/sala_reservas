@@ -1,0 +1,420 @@
+{% extends 'reservas/base.html' %}
+
+{% block title %}Dashboard de Métricas{% endblock %}
+
+{% block extra_css %}
+<style>
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .metric-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: transform 0.3s;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .metric-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0.5rem 0;
+    }
+
+    .metric-label {
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    .chart-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .chart-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-wrapper {
+        position: relative;
+        height: 300px;
+    }
+
+    .top-users-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .top-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-position {
+        background: #667eea;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .user-count {
+        background: #667eea;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .period-info {
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-wrapper {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="dashboard-header">
+        <div>
+            <h1 style="color: #667eea; margin-bottom: 0.5rem;">📊 Dashboard de Métricas</h1>
+            <p class="period-info">Datos de los últimos 30 días (desde {{ fecha_inicio|date:"d/m/Y" }})</p>
+        </div>
+        <div>
+            <a href="{% url 'reservas:index' %}" class="btn btn-secondary">← Volver</a>
+        </div>
+    </div>
+
+    <!-- Métricas Generales -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon">📅</div>
+            <div class="metric-value">{{ total_reservas }}</div>
+            <div class="metric-label">Total de Reservas</div>
+        </div>
+
+        <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="metric-icon">📈</div>
+            <div class="metric-value">{{ reservas_mes_actual }}</div>
+            <div class="metric-label">Reservas este Mes</div>
+        </div>
+
+        <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="metric-icon">👥</div>
+            <div class="metric-value">{{ usuarios_activos }}</div>
+            <div class="metric-label">Usuarios Activos</div>
+        </div>
+
+        <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="metric-icon">📊</div>
+            <div class="metric-value">{{ tasa_ocupacion }}%</div>
+            <div class="metric-label">Tasa de Ocupación (7 días)</div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem;">
+        
+        <!-- Top Salas -->
+        <div class="chart-container">
+            <h3 class="chart-title">🏆 Salas Más Reservadas</h3>
+            <div class="chart-wrapper">
+                <canvas id="topSalasChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Horarios -->
+        <div class="chart-container">
+            <h3 class="chart-title">⏰ Horarios Más Populares</h3>
+            <div class="chart-wrapper">
+                <canvas id="topHorariosChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tendencia y Días de la Semana -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem;">
+        
+        <!-- Tendencia -->
+        <div class="chart-container">
+            <h3 class="chart-title">📈 Tendencia de Reservas (30 días)</h3>
+            <div class="chart-wrapper">
+                <canvas id="tendenciaChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Días de la Semana -->
+        <div class="chart-container">
+            <h3 class="chart-title">📅 Reservas por Día de la Semana</h3>
+            <div class="chart-wrapper">
+                <canvas id="diasChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Usuarios y Materiales -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem;">
+        
+        <!-- Top Usuarios -->
+        <div class="chart-container">
+            <h3 class="chart-title">👥 Usuarios Más Activos</h3>
+            {% if top_usuarios %}
+            <ul class="top-users-list">
+                {% for usuario in top_usuarios %}
+                <li class="top-user-item">
+                    <div class="user-info">
+                        <div class="user-position">{{ forloop.counter }}</div>
+                        <div class="user-name">
+                            {% if usuario.user__first_name %}
+                                {{ usuario.user__first_name }} {{ usuario.user__last_name }}
+                            {% else %}
+                                {{ usuario.user__username }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="user-count">{{ usuario.total }} reservas</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p style="text-align: center; color: #999; padding: 2rem;">No hay datos disponibles</p>
+            {% endif %}
+        </div>
+
+        <!-- Materiales -->
+        <div class="chart-container">
+            <h3 class="chart-title">📦 Materiales Más Solicitados</h3>
+            {% if materiales_labels %}
+            <div class="chart-wrapper">
+                <canvas id="materialesChart"></canvas>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: #999; padding: 2rem;">No hay datos de materiales</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+// Configuración global de Chart.js
+Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+Chart.defaults.font.size = 13;
+
+// Colores
+const colors = {
+    primary: 'rgba(102, 126, 234, 0.8)',
+    secondary: 'rgba(118, 75, 162, 0.8)',
+    success: 'rgba(40, 167, 69, 0.8)',
+    danger: 'rgba(220, 53, 69, 0.8)',
+    warning: 'rgba(255, 193, 7, 0.8)',
+    info: 'rgba(23, 162, 184, 0.8)',
+};
+
+// 1. Top Salas
+const topSalasCtx = document.getElementById('topSalasChart');
+if (topSalasCtx) {
+    new Chart(topSalasCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ top_salas_labels|safe }},
+            datasets: [{
+                label: 'Reservas',
+                data: {{ top_salas_data|safe }},
+                backgroundColor: colors.primary,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// 2. Top Horarios
+const topHorariosCtx = document.getElementById('topHorariosChart');
+if (topHorariosCtx) {
+    new Chart(topHorariosCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ top_horarios_labels|safe }},
+            datasets: [{
+                label: 'Reservas',
+                data: {{ top_horarios_data|safe }},
+                backgroundColor: colors.secondary,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// 3. Tendencia
+const tendenciaCtx = document.getElementById('tendenciaChart');
+if (tendenciaCtx) {
+    new Chart(tendenciaCtx, {
+        type: 'line',
+        data: {
+            labels: {{ tendencia_labels|safe }},
+            datasets: [{
+                label: 'Reservas',
+                data: {{ tendencia_data|safe }},
+                borderColor: colors.success,
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                tension: 0.4,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// 4. Días de la Semana
+const diasCtx = document.getElementById('diasChart');
+if (diasCtx) {
+    new Chart(diasCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ dias_labels|safe }},
+            datasets: [{
+                label: 'Reservas',
+                data: {{ dias_data|safe }},
+                backgroundColor: colors.info,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// 5. Materiales
+const materialesCtx = document.getElementById('materialesChart');
+if (materialesCtx && {{ materiales_labels|length }} > 0) {
+    new Chart(materialesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ materiales_labels|safe }},
+            datasets: [{
+                data: {{ materiales_data|safe }},
+                backgroundColor: [
+                    colors.primary,
+                    colors.secondary,
+                    colors.success,
+                    colors.warning,
+                    colors.info,
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

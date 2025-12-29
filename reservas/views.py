@@ -254,3 +254,187 @@ def cancelar_reserva(request, reservation_id):
         messages.success(request, 'Reserva cancelada exitosamente')
     
     return redirect('reservas:mis_reservas')
+
+from django.db.models import Count, Q
+from django.db.models.functions import TruncDate
+from datetime import timedelta
+from collections import Counter
+
+
+@login_required
+def dashboard(request):
+    """Dashboard de métricas y estadísticas"""
+    
+    # Solo admins pueden ver el dashboard
+    if not request.user.is_staff:
+        messages.error(request, 'No tienes permisos para acceder al dashboard')
+        return redirect('reservas:index')
+    
+    # Fecha de referencia (últimos 30 días)
+    fecha_inicio = timezone.now().date() - timedelta(days=30)
+    
+    # ==========================================
+    # 1. ESTADÍSTICAS GENERALES
+    # ==========================================
+    total_reservas = Reservation.objects.filter(
+        status__in=['confirmed', 'completed']
+    ).count()
+    
+    reservas_mes_actual = Reservation.objects.filter(
+        status__in=['confirmed', 'completed'],
+        created_at__gte=fecha_inicio
+    ).count()
+    
+    usuarios_activos = Reservation.objects.filter(
+        created_at__gte=fecha_inicio
+    ).values('user').distinct().count()
+    
+    total_salas = Room.objects.filter(is_active=True, is_public=True).count()
+    
+    # Calcular tasa de ocupación (últimos 7 días)
+    dias_atras = 7
+    fecha_inicio_ocupacion = timezone.now().date() - timedelta(days=dias_atras)
+    
+    # Total de slots disponibles
+    bloques_activos = TimeBlock.objects.filter(is_active=True).count()
+    total_slots = total_salas * bloques_activos * dias_atras
+    
+    # Slots reservados
+    slots_reservados = Reservation.objects.filter(
+        date__gte=fecha_inicio_ocupacion,
+        status__in=['confirmed', 'completed']
+    ).count()
+    
+    tasa_ocupacion = round((slots_reservados / total_slots * 100), 1) if total_slots > 0 else 0
+    
+    # ==========================================
+    # 2. TOP 5 SALAS MÁS RESERVADAS
+    # ==========================================
+    top_salas = Reservation.objects.filter(
+        status__in=['confirmed', 'completed'],
+        created_at__gte=fecha_inicio
+    ).values(
+        'room__name'
+    ).annotate(
+        total=Count('id')
+    ).order_by('-total')[:5]
+    
+    top_salas_labels = [sala['room__name'] for sala in top_salas]
+    top_salas_data = [sala['total'] for sala in top_salas]
+    
+    # ==========================================
+    # 3. HORARIOS MÁS POPULARES
+    # ==========================================
+    top_horarios = Reservation.objects.filter(
+        status__in=['confirmed', 'completed'],
+        created_at__gte=fecha_inicio
+    ).values(
+        'time_block__name',
+        'time_block__start_time'
+    ).annotate(
+        total=Count('id')
+    ).order_by('time_block__start_time')[:10]
+    
+    top_horarios_labels = [h['time_block__name'] for h in top_horarios]
+    top_horarios_data = [h['total'] for h in top_horarios]
+    
+    # ==========================================
+    # 4. RESERVAS POR DÍA DE LA SEMANA
+    # ==========================================
+    dias_semana = {
+        0: 'Lunes',
+        1: 'Martes',
+        2: 'Miércoles',
+        3: 'Jueves',
+        4: 'Viernes',
+        5: 'Sábado',
+        6: 'Domingo'
+    }
+    
+    reservas_por_dia = {}
+    for reserva in Reservation.objects.filter(
+        status__in=['confirmed', 'completed'],
+        created_at__gte=fecha_inicio
+    ):
+        dia = reserva.date.weekday()
+        reservas_por_dia[dia] = reservas_por_dia.get(dia, 0) + 1
+    
+    dias_labels = [dias_semana[i] for i in range(7)]
+    dias_data = [reservas_por_dia.get(i, 0) for i in range(7)]
+    
+    # ==========================================
+    # 5. USUARIOS MÁS ACTIVOS
+    # ==========================================
+    top_usuarios = Reservation.objects.filter(
+        status__in=['confirmed', 'completed'],
+        created_at__gte=fecha_inicio
+    ).values(
+        'user__username',
+        'user__first_name',
+        'user__last_name'
+    ).annotate(
+        total=Count('id')
+    ).order_by('-total')[:5]
+    
+    # ==========================================
+    # 6. TENDENCIA DE RESERVAS (últimos 30 días)
+    # ==========================================
+    tendencia = Reservation.objects.filter(
+        created_at__gte=fecha_inicio,
+        status__in=['confirmed', 'completed']
+    ).annotate(
+        fecha=TruncDate('created_at')
+    ).values('fecha').annotate(
+        total=Count('id')
+    ).order_by('fecha')
+    
+    tendencia_labels = [t['fecha'].strftime('%d/%m') for t in tendencia]
+    tendencia_data = [t['total'] for t in tendencia]
+    
+    # ==========================================
+    # 7. MATERIALES MÁS SOLICITADOS
+    # ==========================================
+    materiales_counter = Counter()
+    for reserva in Reservation.objects.filter(
+        status__in=['confirmed', 'completed'],
+        created_at__gte=fecha_inicio
+    ).prefetch_related('requested_materials'):
+        for material in reserva.requested_materials.all():
+            materiales_counter[material.name] += 1
+    
+    materiales_labels = list(materiales_counter.keys())[:5]
+    materiales_data = [materiales_counter[m] for m in materiales_labels]
+    
+    # ==========================================
+    # Context para el template
+    # ==========================================
+    context = {
+        # Estadísticas generales
+        'total_reservas': total_reservas,
+        'reservas_mes_actual': reservas_mes_actual,
+        'usuarios_activos': usuarios_activos,
+        'total_salas': total_salas,
+        'tasa_ocupacion': tasa_ocupacion,
+        
+        # Gráficos
+        'top_salas_labels': top_salas_labels,
+        'top_salas_data': top_salas_data,
+        
+        'top_horarios_labels': top_horarios_labels,
+        'top_horarios_data': top_horarios_data,
+        
+        'dias_labels': dias_labels,
+        'dias_data': dias_data,
+        
+        'top_usuarios': top_usuarios,
+        
+        'tendencia_labels': tendencia_labels,
+        'tendencia_data': tendencia_data,
+        
+        'materiales_labels': materiales_labels,
+        'materiales_data': materiales_data,
+        
+        'fecha_inicio': fecha_inicio,
+    }
+    
+    return render(request, 'reservas/dashboard.html', context)
