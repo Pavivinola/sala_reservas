@@ -135,7 +135,7 @@
 <div class="card">
     <div class="dashboard-header">
         <div>
-            <h1 style="color: #667eea; margin-bottom: 0.5rem;">📊 Dashboard de Métricas</h1>
+            <h1 style="color: #667eea; margin-bottom: 0.5rem;"> Dashboard de Métricas</h1>
             <p class="period-info">Datos de los últimos 30 días (desde {{ fecha_inicio|date:"d/m/Y" }})</p>
         </div>
         <div>
@@ -146,25 +146,25 @@
     <!-- Métricas Generales -->
     <div class="metrics-grid">
         <div class="metric-card">
-            <div class="metric-icon">📅</div>
+            <div class="metric-icon"></div>
             <div class="metric-value">{{ total_reservas }}</div>
             <div class="metric-label">Total de Reservas</div>
         </div>
 
         <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-            <div class="metric-icon">📈</div>
+            <div class="metric-icon"></div>
             <div class="metric-value">{{ reservas_mes_actual }}</div>
             <div class="metric-label">Reservas este Mes</div>
         </div>
 
         <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-            <div class="metric-icon">👥</div>
+            <div class="metric-icon"></div>
             <div class="metric-value">{{ usuarios_activos }}</div>
             <div class="metric-label">Usuarios Activos</div>
         </div>
 
         <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-            <div class="metric-icon">📊</div>
+            <div class="metric-icon"></div>
             <div class="metric-value">{{ tasa_ocupacion }}%</div>
             <div class="metric-label">Tasa de Ocupación (7 días)</div>
         </div>
@@ -175,7 +175,7 @@
         
         <!-- Top Salas -->
         <div class="chart-container">
-            <h3 class="chart-title">🏆 Salas Más Reservadas</h3>
+            <h3 class="chart-title"> Salas Más Reservadas</h3>
             <div class="chart-wrapper">
                 <canvas id="topSalasChart"></canvas>
             </div>
@@ -183,7 +183,7 @@
 
         <!-- Top Horarios -->
         <div class="chart-container">
-            <h3 class="chart-title">⏰ Horarios Más Populares</h3>
+            <h3 class="chart-title"> Horarios Más Populares</h3>
             <div class="chart-wrapper">
                 <canvas id="topHorariosChart"></canvas>
             </div>
@@ -196,7 +196,7 @@
         
         <!-- Tendencia -->
         <div class="chart-container">
-            <h3 class="chart-title">📈 Tendencia de Reservas (30 días)</h3>
+            <h3 class="chart-title"> Tendencia de Reservas (30 días)</h3>
             <div class="chart-wrapper">
                 <canvas id="tendenciaChart"></canvas>
             </div>
@@ -204,7 +204,7 @@
 
         <!-- Días de la Semana -->
         <div class="chart-container">
-            <h3 class="chart-title">📅 Reservas por Día de la Semana</h3>
+            <h3 class="chart-title"> Reservas por Día de la Semana</h3>
             <div class="chart-wrapper">
                 <canvas id="diasChart"></canvas>
             </div>
@@ -217,7 +217,7 @@
         
         <!-- Top Usuarios -->
         <div class="chart-container">
-            <h3 class="chart-title">👥 Usuarios Más Activos</h3>
+            <h3 class="chart-title"> Usuarios Más Activos</h3>
             {% if top_usuarios %}
             <ul class="top-users-list">
                 {% for usuario in top_usuarios %}
@@ -243,7 +243,7 @@
 
         <!-- Materiales -->
         <div class="chart-container">
-            <h3 class="chart-title">📦 Materiales Más Solicitados</h3>
+            <h3 class="chart-title"> Materiales Más Solicitados</h3>
             {% if materiales_labels %}
             <div class="chart-wrapper">
                 <canvas id="materialesChart"></canvas>

@@ -151,7 +151,7 @@
     <!-- Reservas Activas -->
     <div class="card">
         <div class="card-header">
-            <h2>📅 Mis Reservas Activas</h2>
+            <h2> Mis Reservas Activas</h2>
         </div>
 
         {% if reservas_activas %}
@@ -168,12 +168,12 @@
 
                     <div class="reservation-details">
                         <div class="detail-item">
-                            <span class="detail-icon">📅</span>
+                            <span class="detail-icon"></span>
                             <span>{{ reserva.date|date:"l, d/m/Y" }}</span>
                         </div>
 
                         <div class="detail-item">
-                            <span class="detail-icon">⏰</span>
+                            <span class="detail-icon"></span>
                             <span>{{ reserva.time_block.start_time|time:"H:i" }} - {{ reserva.time_block.end_time|time:"H:i" }}</span>
                         </div>
 
@@ -183,7 +183,7 @@
                         </div>
 
                         <div class="detail-item">
-                            <span class="detail-icon">📍</span>
+                            <span class="detail-icon"></span>
                             <span>{{ reserva.room.location }}</span>
                         </div>
                     </div>

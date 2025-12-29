@@ -136,35 +136,35 @@
 <div class="confirmation-card">
     <div class="card">
         <div class="card-header">
-            <h2>📝 Confirmar Reserva</h2>
+            <h2> Confirmar Reserva</h2>
         </div>
 
         <!-- Resumen de Reserva -->
         <div class="reservation-summary">
-            <h3>📋 Resumen de tu Reserva</h3>
+            <h3> Resumen de tu Reserva</h3>
             
             <div class="summary-item">
-                <span class="summary-label">🏢 Sala:</span>
+                <span class="summary-label"> Sala:</span>
                 <span class="summary-value">{{ sala.name }}</span>
             </div>
 
             <div class="summary-item">
-                <span class="summary-label">👥 Capacidad:</span>
+                <span class="summary-label"> Capacidad:</span>
                 <span class="summary-value">{{ sala.capacity }} personas</span>
             </div>
 
             <div class="summary-item">
-                <span class="summary-label">📅 Fecha:</span>
+                <span class="summary-label"> Fecha:</span>
                 <span class="summary-value">{{ fecha|date:"l, d/m/Y" }}</span>
             </div>
 
             <div class="summary-item">
-                <span class="summary-label">⏰ Horario:</span>
+                <span class="summary-label"> Horario:</span>
                 <span class="summary-value">{{ bloque.start_time|time:"H:i" }} - {{ bloque.end_time|time:"H:i" }}</span>
             </div>
 
             <div class="summary-item">
-                <span class="summary-label">⌛ Duración:</span>
+                <span class="summary-label"> Duración:</span>
                 <span class="summary-value">{{ bloque.duration_hours }} hora(s)</span>
             </div>
         </div>
@@ -176,7 +176,7 @@
             <!-- Materiales Disponibles -->
             {% if materiales_disponibles %}
             <div class="materials-section">
-                <h4>📦 Materiales Adicionales (Opcional)</h4>
+                <h4> Materiales Adicionales (Opcional)</h4>
                 <p style="color: #666; margin-bottom: 1rem;">Selecciona los materiales que necesitas para tu reserva:</p>
                 
                 {% for material in materiales_disponibles %}
@@ -200,7 +200,7 @@
             <!-- Notas Adicionales -->
             <div class="notes-section">
                 <label for="notas" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">
-                    📝 Notas Adicionales (Opcional)
+                     Notas Adicionales (Opcional)
                 </label>
                 <textarea 
                     name="notas" 
