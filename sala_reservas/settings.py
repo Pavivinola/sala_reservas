@@ -25,16 +25,8 @@ SECRET_KEY = 'django-insecure-_d#!1jgj2r(mt#sto=(pwl(5_^m7m7%r76aj6kl5o6gsc33&%3
 # SECURITY WARNING: don't run with debug turned on in production!
 import os
 
-# Detectar si está en PythonAnywhere
-if 'PYTHONANYWHERE_DOMAIN' in os.environ:
-    DEBUG = False
-    ALLOWED_HOSTS = [os.environ.get('PYTHONANYWHERE_DOMAIN'), 'localhost', '127.0.0.1']
-else:
-    DEBUG = True
-    ALLOWED_HOSTS = []
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
