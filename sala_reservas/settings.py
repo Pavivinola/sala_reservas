@@ -128,5 +128,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
+# Configuración de Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'reservas.uah@gmail.com'  # email que cremos para esto
+EMAIL_HOST_PASSWORD = 'blzi zsnp pnbx rrea'  # contraseña de aplicación
+DEFAULT_FROM_EMAIL = 'Sistema de Reservas UAH <reservas.uah@gmail.com>'
 
 
