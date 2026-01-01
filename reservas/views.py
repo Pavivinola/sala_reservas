@@ -5,7 +5,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta, date
 from django.db.models import Q
 from .models import Room, TimeBlock, Reservation, ReservationRules, RoomUnavailability
-
+from .decorators import user_can_reserve, staff_required
+from .utils import user_can_access_room, get_available_rooms_for_user
 
 def index(request):
     """Página principal"""
@@ -42,8 +43,11 @@ def disponibilidad(request):
     dias_semana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     dia_semana = dias_semana[fecha_seleccionada.weekday()]
     
-    # Obtener salas públicas y activas
-    salas = Room.objects.filter(is_public=True, is_active=True).order_by('name')
+    # Obtener salas según permisos del usuario
+    if request.user.is_authenticated:
+            salas = get_available_rooms_for_user(request.user).order_by('name')
+    else:
+            salas = Room.objects.filter(is_public=True, is_active=True).order_by('name')
     
     # Obtener bloques horarios para ese día
     bloques = TimeBlock.objects.filter(
@@ -116,11 +120,15 @@ def disponibilidad(request):
 
 
 @login_required
+@user_can_reserve
 def reservar(request, room_id, timeblock_id, date):
     """Procesar reserva de sala"""
     sala = get_object_or_404(Room, pk=room_id, is_active=True)
     bloque = get_object_or_404(TimeBlock, pk=timeblock_id, is_active=True)
-    
+    # Verificar que el usuario tenga permiso para reservar esta sala
+    if not user_can_access_room(request.user, sala):
+    	messages.error(request, 'No tienes permisos para reservar esta sala (solo personal autorizado)')
+    return redirect('reservas:disponibilidad')
     try:
         fecha = datetime.strptime(date, '%Y-%m-%d').date()
     except ValueError:
@@ -260,21 +268,16 @@ from django.db.models.functions import TruncDate
 from datetime import timedelta
 from collections import Counter
 
-
 @login_required
+@staff_required
 def dashboard(request):
     """Dashboard de métricas y estadísticas"""
     
-    # Solo admins pueden ver el dashboard
-    if not request.user.is_staff:
-        messages.error(request, 'No tienes permisos para acceder al dashboard')
-        return redirect('reservas:index')
-    
     # Fecha de referencia (últimos 30 días)
     fecha_inicio = timezone.now().date() - timedelta(days=30)
-    
-    # ==========================================
-    # 1. ESTADÍSTICAS GENERALES
+
+
+#1. ESTADÍSTICAS GENERALES
     # ==========================================
     total_reservas = Reservation.objects.filter(
         status__in=['confirmed', 'completed']
