@@ -221,9 +221,9 @@
                     {% if user.profile %}
                         <span style="opacity: 0.8;">({{ user.profile.role.get_name_display }})</span>
                     {% endif %}
-                    <a href="{% url 'admin:logout' %}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Salir</a>
+                    <a href="{% url 'logout' %}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Salir</a>
                 {% else %}
-                    <a href="{% url 'admin:login' %}?next={{ request.path }}" class="btn btn-primary" style="padding: 0.5rem 1rem;">Iniciar Sesión</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="padding: 0.5rem 1rem;">Iniciar Sesión</a>
                 {% endif %}
             </div>
         </div>

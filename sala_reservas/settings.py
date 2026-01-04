@@ -137,4 +137,8 @@ EMAIL_HOST_USER = 'reservas.uah@gmail.com'  # email que cremos para esto
 EMAIL_HOST_PASSWORD = 'blzi zsnp pnbx rrea'  # contraseña de aplicación
 DEFAULT_FROM_EMAIL = 'Sistema de Reservas UAH <reservas.uah@gmail.com>'
 
+# URLs de autenticación
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'reservas:disponibilidad'
+LOGOUT_REDIRECT_URL = 'login'
 

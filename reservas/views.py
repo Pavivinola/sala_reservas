@@ -7,6 +7,7 @@ from django.db.models import Q
 from .models import Room, TimeBlock, Reservation, ReservationRules, RoomUnavailability
 from .decorators import user_can_reserve, staff_required
 from .utils import user_can_access_room, get_available_rooms_for_user
+from django.contrib.auth import logout
 
 def index(request):
     """Página principal"""
@@ -123,12 +124,26 @@ def disponibilidad(request):
 @user_can_reserve
 def reservar(request, room_id, timeblock_id, date):
     """Procesar reserva de sala"""
+    print(f"=== DEBUG RESERVAR ===")
+    print(f"User: {request.user.username}")
+    print(f"Has profile: {hasattr(request.user, 'profile')}")
+    if hasattr(request.user, 'profile'):
+        print(f"Role: {request.user.profile.role.name}")
+        print(f"Can reserve: {request.user.profile.role.can_reserve}")
+    print(f"Room ID: {room_id}, Block ID: {timeblock_id}, Date: {date}")
+    
     sala = get_object_or_404(Room, pk=room_id, is_active=True)
     bloque = get_object_or_404(TimeBlock, pk=timeblock_id, is_active=True)
+    
+    print(f"Sala: {sala.name}, es pública: {sala.is_public}")
+    print(f"Bloque: {bloque.name}")
+    
     # Verificar que el usuario tenga permiso para reservar esta sala
     if not user_can_access_room(request.user, sala):
-    	messages.error(request, 'No tienes permisos para reservar esta sala (solo personal autorizado)')
-    return redirect('reservas:disponibilidad')
+        print(">>> FALLO: No tiene permisos para esta sala")
+        messages.error(request, 'No tienes permisos para reservar esta sala (solo personal autorizado)')
+        return redirect('reservas:disponibilidad')
+    
     try:
         fecha = datetime.strptime(date, '%Y-%m-%d').date()
     except ValueError:
@@ -140,12 +155,14 @@ def reservar(request, room_id, timeblock_id, date):
     
     # 1. Verificar que no sea fecha pasada
     if fecha < timezone.now().date():
+        print(">>> FALLO: Fecha pasada")
         messages.error(request, 'No puedes reservar en fechas pasadas')
         return redirect('reservas:disponibilidad')
     
     # 2. Verificar límite de anticipación
     max_dias = reglas.max_days_in_advance if reglas else 2
     if fecha > timezone.now().date() + timedelta(days=max_dias):
+        print(f">>> FALLO: Más de {max_dias} días anticipación")
         messages.error(request, f'No puedes reservar con más de {max_dias} días de anticipación')
         return redirect('reservas:disponibilidad')
     
@@ -156,6 +173,7 @@ def reservar(request, room_id, timeblock_id, date):
         time_block=bloque,
         status__in=['pending', 'confirmed']
     ).exists():
+        print(">>> FALLO: Ya reservado")
         messages.error(request, 'Este horario ya está reservado')
         return redirect('reservas:disponibilidad')
     
@@ -164,6 +182,7 @@ def reservar(request, room_id, timeblock_id, date):
         Q(room=sala, date=fecha, time_block=bloque) |
         Q(room=sala, date=fecha, time_block__isnull=True)
     ).exists():
+        print(">>> FALLO: Horario bloqueado")
         messages.error(request, 'Este horario no está disponible')
         return redirect('reservas:disponibilidad')
     
@@ -183,6 +202,7 @@ def reservar(request, room_id, timeblock_id, date):
     horas_nueva_reserva = bloque.duration_hours()
     
     if horas_reservadas + horas_nueva_reserva > max_horas:
+        print(f">>> FALLO: Excede límite de {max_horas} horas")
         messages.error(
             request,
             f'No puedes reservar más de {max_horas} horas por día. '
@@ -190,8 +210,11 @@ def reservar(request, room_id, timeblock_id, date):
         )
         return redirect('reservas:disponibilidad')
     
+    print(">>> Todas las validaciones pasaron")
+    
     # Si es POST, procesar formulario de materiales
     if request.method == 'POST':
+        print(">>> Método POST - Creando reserva")
         materiales_ids = request.POST.getlist('materiales')
         
         # Crear reserva
@@ -215,6 +238,7 @@ def reservar(request, room_id, timeblock_id, date):
         )
         return redirect('reservas:mis_reservas')
     
+    print(">>> Método GET - Mostrando formulario de confirmación")
     # Mostrar formulario de confirmación
     context = {
         'sala': sala,
@@ -223,7 +247,6 @@ def reservar(request, room_id, timeblock_id, date):
         'materiales_disponibles': sala.available_materials.filter(is_active=True),
     }
     return render(request, 'reservas/confirmar.html', context)
-
 
 @login_required
 def mis_reservas(request):
@@ -441,3 +464,8 @@ def dashboard(request):
     }
     
     return render(request, 'reservas/dashboard.html', context)
+#Función de logout personalizada
+def logout_view(request):
+    """Cerrar sesión y redirigir al login"""
+    logout(request)
+    return redirect('login')
