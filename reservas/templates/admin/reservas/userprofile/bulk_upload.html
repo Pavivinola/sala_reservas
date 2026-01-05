@@ -1,0 +1,83 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 2rem auto;">
+    <h1>{{ title }}</h1>
+    
+    <div style="background: #e3f2fd; padding: 1.5rem; border-radius: 8px; margin: 2rem 0; border-left: 4px solid #2196F3;">
+        <h3 style="margin-top: 0; color: #1976D2;">📋 Formato del archivo Excel</h3>
+        <p>El archivo debe contener las siguientes columnas (en este orden):</p>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; background: white;">
+            <thead>
+                <tr style="background: #2196F3; color: white;">
+                    <th style="padding: 0.75rem; text-align: left;">Columna</th>
+                    <th style="padding: 0.75rem; text-align: left;">Descripción</th>
+                    <th style="padding: 0.75rem; text-align: center;">Requerida</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>username</strong></td>
+                    <td style="padding: 0.75rem;">Nombre de usuario único</td>
+                    <td style="padding: 0.75rem; text-align: center;">✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>email</strong></td>
+                    <td style="padding: 0.75rem;">Correo electrónico</td>
+                    <td style="padding: 0.75rem; text-align: center;">✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>first_name</strong></td>
+                    <td style="padding: 0.75rem;">Nombre</td>
+                    <td style="padding: 0.75rem; text-align: center;">✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>last_name</strong></td>
+                    <td style="padding: 0.75rem;">Apellido</td>
+                    <td style="padding: 0.75rem; text-align: center;">✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>role_name</strong></td>
+                    <td style="padding: 0.75rem;">Nombre del rol (debe existir)</td>
+                    <td style="padding: 0.75rem; text-align: center;">✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>department</strong></td>
+                    <td style="padding: 0.75rem;">Facultad/Carrera</td>
+                    <td style="padding: 0.75rem; text-align: center;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>phone</strong></td>
+                    <td style="padding: 0.75rem;">Teléfono</td>
+                    <td style="padding: 0.75rem; text-align: center;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.75rem;"><strong>is_staff</strong></td>
+                    <td style="padding: 0.75rem;">TRUE/FALSE (acceso al admin)</td>
+                    <td style="padding: 0.75rem; text-align: center;">-</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.75rem;"><strong>password</strong></td>
+                    <td style="padding: 0.75rem;">Contraseña (si vacío, se genera automática)</td>
+                    <td style="padding: 0.75rem; text-align: center;">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <div style="margin-top: 2rem;">
+            <button type="submit" style="background: #4CAF50; color: white; padding: 0.75rem 2rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem;">
+                📤 Cargar Usuarios
+            </button>
+            <a href="{% url 'admin:reservas_userprofile_changelist' %}" style="margin-left: 1rem; padding: 0.75rem 2rem; background: #757575; color: white; text-decoration: none; border-radius: 4px; display: inline-block;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

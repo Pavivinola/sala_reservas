@@ -1,7 +1,15 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Material, Room, TimeBlock, RoomUnavailability, ReservationRules, Reservation, Role, UserProfile
-
+from django.shortcuts import render, redirect
+from django.urls import path
+from django.contrib import messages
+from django.contrib.auth.models import User
+from .forms import BulkUserUploadForm
+import openpyxl
+from django.contrib.auth.hashers import make_password
+import string
+import random
 
 # ========================================
 # ADMIN: Material
@@ -309,7 +317,7 @@ class RoleAdmin(admin.ModelAdmin):
         )
     user_count.short_description = "Usuarios"
 # ========================================
-# ADMIN: UserProfile
+# ADMIN: UserProfile con Carga Masiva
 # ========================================
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -336,3 +344,127 @@ class UserProfileAdmin(admin.ModelAdmin):
             'fields': ('is_active',)
         }),
     )
+    
+    # Agregar URLs personalizadas
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('bulk-upload/', self.admin_site.admin_view(self.bulk_upload_view), name='reservas_userprofile_bulk_upload'),
+        ]
+        return custom_urls + urls
+    
+    # Vista de carga masiva
+    def bulk_upload_view(self, request):
+        if request.method == 'POST':
+            form = BulkUserUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                excel_file = request.FILES['excel_file']
+                send_email = form.cleaned_data['send_welcome_email']
+                
+                # Procesar el archivo Excel
+                result = self.process_excel_file(excel_file, send_email)
+                
+                # Mostrar resultados
+                if result['created'] > 0:
+                    messages.success(request, f"✓ {result['created']} usuario(s) creado(s) exitosamente")
+                
+                if result['errors']:
+                    for error in result['errors']:
+                        messages.error(request, f"✗ {error}")
+                
+                return redirect('..')
+        else:
+            form = BulkUserUploadForm()
+        
+        context = {
+            'form': form,
+            'title': 'Carga Masiva de Usuarios',
+            'site_header': 'Sistema de Reservas',
+        }
+        return render(request, 'admin/reservas/userprofile/bulk_upload.html', context)
+    
+    # Procesar archivo Excel
+    def process_excel_file(self, excel_file, send_email):
+        result = {'created': 0, 'errors': []}
+        
+        try:
+            workbook = openpyxl.load_workbook(excel_file)
+            sheet = workbook.active
+            
+            # Leer encabezados (primera fila)
+            headers = [cell.value for cell in sheet[1]]
+            
+            # Validar que tenga las columnas necesarias
+            required_columns = ['username', 'email', 'first_name', 'last_name', 'role_name']
+            for col in required_columns:
+                if col not in headers:
+                    result['errors'].append(f"Falta columna requerida: {col}")
+                    return result
+            
+            # Procesar cada fila (desde la 2 en adelante)
+            for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    # Convertir fila a diccionario
+                    row_data = dict(zip(headers, row))
+                    
+                    # Saltar filas vacías
+                    if not row_data.get('username'):
+                        continue
+                    
+                    # Verificar si el usuario ya existe
+                    if User.objects.filter(username=row_data['username']).exists():
+                        result['errors'].append(f"Fila {row_num}: Usuario '{row_data['username']}' ya existe")
+                        continue
+                    
+                    # Buscar el rol
+                    try:
+                        role = Role.objects.get(name=row_data['role_name'])
+                    except Role.DoesNotExist:
+                        result['errors'].append(f"Fila {row_num}: Rol '{row_data['role_name']}' no existe")
+                        continue
+                    
+                    # Generar contraseña si no viene en el Excel
+                    password = row_data.get('password')
+                    if not password:
+                        password = self.generate_random_password()
+                    
+                    # Crear usuario de Django
+                    user = User.objects.create(
+                        username=row_data['username'],
+                        email=row_data['email'],
+                        first_name=row_data.get('first_name', ''),
+                        last_name=row_data.get('last_name', ''),
+                        is_staff=row_data.get('is_staff', 'FALSE').upper() == 'TRUE',
+                        password=make_password(password)
+                    )
+                    
+                    # Crear perfil
+                    UserProfile.objects.create(
+                        user=user,
+                        role=role,
+                        department=row_data.get('department', ''),
+                        phone=row_data.get('phone', ''),
+                        alma_user_id=row_data.get('alma_user_id', ''),
+                        is_active=True
+                    )
+                    
+                    result['created'] += 1
+                    
+                    # TODO: Enviar email si send_email es True
+                    # Aquí puedes agregar lógica de envío de email con las credenciales
+                    
+                except Exception as e:
+                    result['errors'].append(f"Fila {row_num}: {str(e)}")
+            
+        except Exception as e:
+            result['errors'].append(f"Error al leer el archivo: {str(e)}")
+        
+        return result
+    
+    # Generar contraseña aleatoria
+    def generate_random_password(self, length=10):
+        characters = string.ascii_letters + string.digits
+        return ''.join(random.choice(characters) for i in range(length))
+    
+    # Agregar botón en el listado
+    change_list_template = 'admin/reservas/userprofile/change_list.html'
