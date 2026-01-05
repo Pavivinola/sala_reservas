@@ -205,7 +205,7 @@
         {% endif %}
 
         <div class="current-date">
-            {{ fecha_seleccionada|date:"l, d/m/Y" }}
+            {{ nombre_dia_espanol }}, {{ fecha_seleccionada|date:"d/m/Y" }}
         </div>
 
         {% if fecha_siguiente %}

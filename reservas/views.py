@@ -43,6 +43,9 @@ def disponibilidad(request):
     # Obtener día de la semana en inglés
     dias_semana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     dia_semana = dias_semana[fecha_seleccionada.weekday()]
+    # Obtener nombre del día en español para mostrar
+    dias_espanol = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+    nombre_dia_espanol = dias_espanol[fecha_seleccionada.weekday()]
     
     # Obtener salas según permisos del usuario
     if request.user.is_authenticated:
@@ -110,6 +113,7 @@ def disponibilidad(request):
     
     context = {
         'fecha_seleccionada': fecha_seleccionada,
+        'nombre_dia_espanol': nombre_dia_espanol,
         'fecha_anterior': fecha_anterior,
         'fecha_siguiente': fecha_siguiente,
         'bloques': bloques,
