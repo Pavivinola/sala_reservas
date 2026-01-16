@@ -8,6 +8,7 @@ from .models import Room, TimeBlock, Reservation, ReservationRules, RoomUnavaila
 from .decorators import user_can_reserve, staff_required
 from .utils import user_can_access_room, get_available_rooms_for_user
 from django.contrib.auth import logout
+from .services.alma_service import alma_service
 
 def index(request):
     """Página principal"""
@@ -216,6 +217,50 @@ def reservar(request, room_id, timeblock_id, date):
     
     print(">>> Todas las validaciones pasaron")
     
+    
+    # ============================================
+    # VERIFICACIÓN DE ESTADO EN ALMA (BIBLIOTECA)
+    # ============================================
+    email_usuario = request.user.email
+    verificacion_alma = alma_service.verificar_deudas_usuario(email_usuario)
+    
+    if verificacion_alma.get('tiene_deudas'):
+    # Usuario tiene restricciones en biblioteca
+        print(f">>> FALLO ALMA: Usuario {email_usuario} con restricciones")
+        print(f"    Activo: {verificacion_alma.get('usuario_activo')}")
+        print(f"    Bloqueos: {verificacion_alma.get('tiene_bloqueos')}")
+        
+
+
+        # Determinar mensaje según el problema (Mensajes de bloqueo de reserva)
+        if not verificacion_alma.get('usuario_activo'):
+            # Usuario inactivo/expirado
+            mensaje = '❌ No puedes reservar porque tu cuenta de biblioteca está inactiva.'
+        elif verificacion_alma.get('tiene_bloqueos'):
+            # Tiene sanciones
+            cantidad = len(verificacion_alma.get('detalles_bloqueos', []))
+            if cantidad == 1:
+                mensaje = '❌ No puedes reservar porque tienes una sanción en Biblioteca.'
+            else:
+                mensaje = f'❌ No puedes reservar porque tienes sanciones en Biblioteca.'
+        else:
+            # Caso genérico
+            mensaje = '❌ No puedes reservar en este momento.'
+        
+        messages.error(request, mensaje)
+        return redirect('reservas:disponibilidad')
+    
+    # Advertencia si hubo error en ALMA pero se permite reserva (fail-open)
+    if verificacion_alma.get('error'):
+        print(f">>> ADVERTENCIA ALMA: Error en API pero se permite reserva (fail-open)")
+        messages.warning(
+            request,
+            '⚠️ No se pudo verificar tu estado en biblioteca. '
+            'Si tienes sanciones activas, tu reserva podría ser cancelada.'
+        )
+    
+    print(">>> ALMA: Usuario OK - puede reservar")
+    # ============================================
     # Si es POST, procesar formulario de materiales
     if request.method == 'POST':
         print(">>> Método POST - Creando reserva")

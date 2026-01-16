@@ -1,7 +1,7 @@
 from django import forms
 
 
-class BulkUserUploadForm(forms.Form):
+class BulkUserUploadForm(forms.Form): # 
     excel_file = forms.FileField(
         label='Archivo Excel',
         help_text='Sube un archivo .xlsx con los datos de los usuarios'

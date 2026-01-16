@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config, Csv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_d#!1jgj2r(mt#sto=(pwl(5_^m7m7%r76aj6kl5o6gsc33&%3'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-import os
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
 
 # Application definition
@@ -77,8 +78,12 @@ WSGI_APPLICATION = 'sala_reservas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': config('DB_NAME', default=str(BASE_DIR / 'db.sqlite3')),
+        'USER': config('DB_USER', default=''),
+        'PASSWORD': config('DB_PASSWORD', default=''),
+        'HOST': config('DB_HOST', default=''),
+        'PORT': config('DB_PORT', default=''),
     }
 }
 
@@ -105,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-cl'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
@@ -130,15 +135,65 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Configuración de Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'reservas.uah@gmail.com'  # email que cremos para esto
-EMAIL_HOST_PASSWORD = 'blzi zsnp pnbx rrea'  # contraseña de aplicación
-DEFAULT_FROM_EMAIL = 'Sistema de Reservas UAH <reservas.uah@gmail.com>'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='Sistema de Reservas <noreply@example.com>')
 
 # URLs de autenticación
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'reservas:disponibilidad'
 LOGOUT_REDIRECT_URL = 'login'
 
+
+# ============================================
+# CONFIGURACIÓN ALMA API
+# ============================================
+
+# Credenciales ALMA
+ALMA_API_KEY = config('ALMA_API_KEY', default='')
+ALMA_API_BASE_URL = config('ALMA_API_BASE_URL', default='https://api-na.hosted.exlibrisgroup.com')
+ALMA_REGION = config('ALMA_REGION', default='NA')
+
+# Política de bloqueo
+ALMA_BLOCK_ANY_DEBT = config('ALMA_BLOCK_ANY_DEBT', default=True, cast=bool)
+ALMA_DEBT_THRESHOLD = config('ALMA_DEBT_THRESHOLD', default=5000, cast=int)
+
+# Performance
+ALMA_CACHE_TIMEOUT = config('ALMA_CACHE_TIMEOUT', default=3600, cast=int) # Esto es en segundos
+ALMA_API_TIMEOUT = config('ALMA_API_TIMEOUT', default=5, cast=int) # Esto es en segundos
+ALMA_FAIL_OPEN = config('ALMA_FAIL_OPEN', default=True, cast=bool) # Esto significa que si ALMA no responde, se permite la reserva
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'alma_integration.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'reservas.services.alma_service': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

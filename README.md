@@ -1,8 +1,8 @@
-# 📚 Sistema de Reservas de Salas
+#  Sistema de Reservas de Salas
 
 Sistema web para la gestión y reserva de salas de estudio con control de horarios, materiales y usuarios.
 
-## 🚀 Características
+##  Características
 
 - ✅ Reserva de salas con visualización en tiempo real
 - ✅ Gestión de bloques horarios configurables por día
@@ -12,12 +12,31 @@ Sistema web para la gestión y reserva de salas de estudio con control de horari
 - ✅ Panel de administración completo
 - ✅ Bloqueos de salas por mantenimiento
 
-## 📋 Requisitos Previos
+##  Requisitos Previos
 
 - Python 3.8 o superior
 - Django 4.2 o superior
 
-## 🛠️ Instalación
+## Configuración Inicial
+
+1. Instalar dependencias:
+```bash
+pip install -r requirements.txt
+```
+
+2. Configurar variables de entorno:
+```bash
+cp .env.example .env
+```
+
+3. Editar `.env` con tus valores:
+   - Genera un SECRET_KEY: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
+   - Configura tus credenciales de email
+   - Ajusta DEBUG y ALLOWED_HOSTS según tu entorno
+
+** IMPORTANTE**: Nunca subas el archivo `.env` a Git
+
+##  Instalación
 
 1. **Clonar el repositorio:**
 ```bash
@@ -70,7 +89,7 @@ python manage.py runserver
    - Frontend: http://127.0.0.1:8000/
    - Admin: http://127.0.0.1:8000/admin/
 
-## 📦 Comandos Útiles
+##  Comandos Útiles
 
 ### Crear bloques horarios
 ```bash
@@ -87,7 +106,7 @@ python manage.py crear_roles
 python manage.py cargar_usuarios usuarios.csv
 ```
 
-## 🗂️ Estructura del Proyecto
+##  Estructura del Proyecto
 ```
 sala_reservas/
 ├── manage.py
@@ -117,7 +136,7 @@ sala_reservas/
 - **Staff**: Acceso a salas internas
 - **Admin**: Control total del sistema
 
-## 📝 Configuración
+##  Configuración
 
 ### Reglas de Reserva
 
@@ -131,7 +150,7 @@ Las reglas se configuran desde el admin en "Configuración de Reglas":
 Los bloques horarios se definen por día de la semana en el admin.
 Ejemplo: Lunes 9:00-11:00, Martes 10:00-12:00, etc.
 
-## 🔧 Configuración para Producción
+##  Configuración para Producción
 
 1. Cambiar `DEBUG = False` en `settings.py`
 2. Configurar `ALLOWED_HOSTS`

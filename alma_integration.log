@@ -1,0 +1,81 @@
+INFO 2026-01-16 15:34:39,896 alma_service ALMA: Consultando API para jamq201027@gmail.com
+WARNING 2026-01-16 15:34:40,885 alma_service ALMA: Usuario jamq201027@gmail.com no encontrado
+INFO 2026-01-16 15:34:49,740 alma_service ALMA: Consultando API para jamq201027@gmail.com
+WARNING 2026-01-16 15:34:50,972 alma_service ALMA: Usuario jamq201027@gmail.com no encontrado
+INFO 2026-01-16 15:37:31,035 alma_service ALMA: Consultando API para jomoreno@uahurtado.cl
+ERROR 2026-01-16 15:37:32,113 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:37:32,115 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,115 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,115 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,116 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,117 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,117 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,118 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,118 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:37:32,118 alma_service ALMA: Usuario 15536063 - Activo: True, Bloqueos: 8
+INFO 2026-01-16 15:37:32,120 alma_service ALMA: jomoreno@uahurtado.cl - Activo: True, Bloqueos: True
+INFO 2026-01-16 15:40:32,460 alma_service ALMA: Consultando API para jomoreno@uahurtado.cl
+ERROR 2026-01-16 15:40:33,551 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:40:33,551 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,552 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,552 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,553 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,553 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,553 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,554 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,554 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:40:33,554 alma_service ALMA: Usuario 15536063 - Activo: True, Bloqueos: 8
+INFO 2026-01-16 15:40:33,556 alma_service ALMA: jomoreno@uahurtado.cl - Activo: True, Bloqueos: True
+INFO 2026-01-16 15:47:37,375 alma_service ALMA: Consultando API para jomoreno@uahurtado.cl
+ERROR 2026-01-16 15:47:38,333 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:47:38,333 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,334 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,334 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,335 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,335 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,335 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,335 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,336 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:47:38,336 alma_service ALMA: Usuario 15536063 - Activo: True, Bloqueos: 8
+INFO 2026-01-16 15:47:38,338 alma_service ALMA: jomoreno@uahurtado.cl - Activo: True, Bloqueos: True
+INFO 2026-01-16 15:47:40,967 alma_service ALMA: Usando caché para jomoreno@uahurtado.cl
+INFO 2026-01-16 15:47:44,852 alma_service ALMA: Usando caché para jomoreno@uahurtado.cl
+INFO 2026-01-16 15:47:48,637 alma_service ALMA: Usando caché para jomoreno@uahurtado.cl
+INFO 2026-01-16 15:50:56,662 alma_service ALMA: Consultando API para jomoreno@uahurtado.cl
+ERROR 2026-01-16 15:50:57,643 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:50:57,644 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,644 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,645 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,645 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,646 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,646 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,647 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,647 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:50:57,648 alma_service ALMA: Usuario 15536063 - Activo: True, Bloqueos: 8
+INFO 2026-01-16 15:50:57,649 alma_service ALMA: jomoreno@uahurtado.cl - Activo: True, Bloqueos: True
+INFO 2026-01-16 15:51:13,176 alma_service ALMA: Usando caché para jomoreno@uahurtado.cl
+INFO 2026-01-16 15:52:58,048 alma_service ALMA: Consultando API para jomoreno@uahurtado.cl
+ERROR 2026-01-16 15:52:59,146 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:52:59,147 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:52:59,147 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:52:59,148 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:52:59,149 alma_service ALMA: Bloqueo activo - OVERDUE
+INFO 2026-01-16 15:52:59,149 alma_service ALMA: Usuario 15536063 - Activo: True, Bloqueos: 4
+INFO 2026-01-16 15:52:59,150 alma_service ALMA: jomoreno@uahurtado.cl - Activo: True, Bloqueos: True
+INFO 2026-01-16 15:54:01,626 alma_service ALMA: Usando caché para jomoreno@uahurtado.cl
+INFO 2026-01-16 15:55:03,081 alma_service ALMA: Consultando API para jomoreno@uahurtado.cl
+ERROR 2026-01-16 15:55:04,083 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:55:04,083 alma_service ALMA: Usuario 15536063 - Activo: True, Bloqueos: 0
+INFO 2026-01-16 15:55:04,085 alma_service ALMA: jomoreno@uahurtado.cl - Activo: True, Bloqueos: False
+INFO 2026-01-16 15:55:08,784 alma_service ALMA: Usando caché para jomoreno@uahurtado.cl
+INFO 2026-01-16 15:57:54,825 alma_service ALMA: Consultando API para puribe@uahurtado.cl
+ERROR 2026-01-16 15:57:56,208 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 15:57:56,208 alma_service ALMA: Usuario 11958771 - Activo: True, Bloqueos: 0
+INFO 2026-01-16 15:57:56,211 alma_service ALMA: puribe@uahurtado.cl - Activo: True, Bloqueos: False
+INFO 2026-01-16 15:58:00,695 alma_service ALMA: Usando caché para puribe@uahurtado.cl
+INFO 2026-01-16 16:31:04,325 alma_service ALMA: Consultando API para puribe@uahurtado.cl
+ERROR 2026-01-16 16:31:05,344 alma_service ALMA: Error parseando expiry_date: can't compare offset-naive and offset-aware datetimes
+INFO 2026-01-16 16:31:05,345 alma_service ALMA: Bloqueo vigente - OVERDUE (expira en 77 días)
+INFO 2026-01-16 16:31:05,345 alma_service ALMA: Bloqueo vigente - OVERDUE (expira en 112 días)
+INFO 2026-01-16 16:31:05,346 alma_service ALMA: Usuario 11958771 - Activo: True, Bloqueos: 2
+INFO 2026-01-16 16:31:05,347 alma_service ALMA: puribe@uahurtado.cl - Activo: True, Bloqueos: True

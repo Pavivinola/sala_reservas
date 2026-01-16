@@ -1,9 +1,32 @@
+# Environment variables
+.env
+*.env
+!.env.example
+
 # Python
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
-__pycache__/
-*.pyc
+.Python
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Django
 *.log
@@ -11,14 +34,9 @@ db.sqlite3
 db.sqlite3-journal
 /media
 /staticfiles
+/static_root
 
-# Entorno virtual
-venv/
-env/
-ENV/
-.venv
-
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -29,10 +47,6 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Configuración local
-local_settings.py
-.env
-
-# Migraciones (opcional, puedes comentar si quieres incluirlas)
-# */migrations/*.py
-# !*/migrations/__init__.py
+# Backup files
+*.bak
+*.backup
